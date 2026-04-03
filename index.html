@@ -88,7 +88,7 @@
     <div class="step-arrow">›</div>
     <div class="step"><div class="step-num" id="s2">2</div><span>8つの要素を埋める</span></div>
     <div class="step-arrow">›</div>
-    <div class="step"><div class="step-num" id="s3">3</div><span>AIに整理してもらう</span></div>
+    <div class="step"><div class="step-num" id="s3">3</div><span>AIにことばを出してもらう</span></div>
   </div>
 
   <div class="theme-section">
@@ -110,11 +110,11 @@
   <div class="actions-row">
     <button class="btn" onclick="fillSample()">サンプルを入れる</button>
     <button class="btn" onclick="clearAll()">クリア</button>
-    <button class="btn btn-primary" id="ai-btn" onclick="runAI()" disabled>AIに整理してもらう ↗</button>
+    <button class="btn btn-primary" id="ai-btn" onclick="runAI()" disabled>AIにことばを出してもらう ↗</button>
   </div>
 
   <div class="output-panel" id="output">
-    <div class="empty-state">テーマと要素を入力して<br>「AIに整理してもらう」を押すと<br>やることリストが作られます</div>
+    <div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>関連することばが並びます</div>
   </div>
 </div>
 
@@ -179,8 +179,8 @@ function updateGuide(){
   const cnt=[0,1,2,3,5,6,7,8].filter(i=>(themes_arr[i]||'').trim()).length;
   if(!hasTheme) el.innerHTML='まず、いま考えたいテーマや目標を入力してください。<br>思いつかないときは「候補を見る」ボタンを押してください。';
   else if(cnt<3) el.innerHTML=`「${themes_arr[4]}」についての要素を8つ埋めていきましょう。<br>思いつかないマスは「✦」ボタンでヒントを見られます。`;
-  else if(cnt<8) el.innerHTML=`あと${8-cnt}つ！埋まったら「AIに整理してもらう」を押してください。`;
-  else el.innerHTML='準備できました！「AIに整理してもらう」を押してください。';
+  else if(cnt<8) el.innerHTML=`あと${8-cnt}つ！埋まったら「AIにことばを出してもらう」を押してください。`;
+  else el.innerHTML='準備できました！「AIにことばを出してもらう」を押してください。';
 }
 
 async function showThemeHints(){
@@ -191,7 +191,7 @@ async function showThemeHints(){
     const res=await fetch('/api/generate',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        prompt:`精神障害・発達障害の方が日常生活や就労で取り組みたいテーマの候補を10個、JSON配列で返してください。温かく具体的な言葉で。{"themes":["テーマ1","テーマ2",...]}のみ返してください。`
+        prompt:`精神障害・発達障害の方が日常生活や就労で取り組みたいテーマの候補を10個、短い単語または短い語句でJSON配列にして返してください。1件は12文字以内を目安にしてください。{"themes":["テーマ1","テーマ2",...]}のみ返してください。`
       })
     });
     if (!res.ok) throw new Error('API request failed');
@@ -246,7 +246,7 @@ async function showCellHints(blockIdx, cellEl){
       body:JSON.stringify({
         prompt:`マンダラチャートのテーマ「${theme}」に対する要素の候補を5個考えてください。
 既に入力済み: ${existingElements.join('、')||'なし'}
-精神障害・発達障害の方向けに、やさしく具体的な言葉で。
+精神障害・発達障害の方向けに、短い単語または短い語句で。1件は12文字以内を目安にしてください。
 {"hints":["候補1","候補2","候補3","候補4","候補5"]}のみ返してください。`
       })
     });
@@ -348,29 +348,30 @@ function clearAll(){
   document.getElementById('theme-inp').value='';
   document.getElementById('theme-chips').innerHTML='';
   renderMandala();checkBtn();updateProgress();updateGuide();
-  document.getElementById('output').innerHTML='<div class="empty-state">テーマと要素を入力して<br>「AIに整理してもらう」を押すと<br>やることリストが作られます</div>';
+  document.getElementById('output').innerHTML='<div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>関連することばが並びます</div>';
 }
 
 async function runAI(){
   const btn=document.getElementById('ai-btn');
   btn.disabled=true;
   const out=document.getElementById('output');
-  out.innerHTML='<div class="loading-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>AIが整理しています…少しお待ちください</span></div>';
+  out.innerHTML='<div class="loading-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>AIがことばを考えています…少しお待ちください</span></div>';
   const elList=[0,1,2,3,5,6,7,8].map(i=>themes_arr[i]).filter(Boolean);
   const details=elements.flatMap(r=>r.filter(c=>c.trim()));
   const prompt=`あなたは精神障害・発達障害の方の生活支援をするAIです。
-マンダラチャートの内容を分析し、やさしく具体的なToDoリストを作ってください。
+マンダラチャートの内容を分析し、本人の行動や気持ちを支える短い「ことば」を提案してください。
 
 テーマ：${themes_arr[4]}
 要素：${elList.join('、')}
 詳細：${details.join('、')||'なし'}
 
 ルール：
-- 一つひとつの行動を小さく、具体的に書く
-- 「〜してみる」「〜から始める」など、やさしい言葉で
-- 優先度：high(今日できること)、mid(今週中)、low(無理せずゆっくり)
-- 最大8件
-- 形式のみ：{"todos":[{"text":"...","priority":"high|mid|low","category":"...","note":"ひとこと励まし"}]}`;
+- 単語または短い語句で返す
+- 1件は12文字以内を目安にする
+- やさしく、わかりやすい表現にする
+- 同じ意味の重複を避ける
+- 最大12件
+- 形式のみ：{"words":["ことば1","ことば2","ことば3"]}`;
 
   try{
     const res=await fetch('/api/generate',{
@@ -381,34 +382,27 @@ async function runAI(){
     const data=await res.json();
     const text=data.text||'';
     const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    renderTodos(parsed.todos||[]);
+    renderWords(parsed.words||[]);
   }catch(e){
-    out.innerHTML='<div class="empty-state">うまく整理できませんでした。<br>もう一度押してみてください。</div>';
+    out.innerHTML='<div class="empty-state">うまくことばを出せませんでした。<br>もう一度押してみてください。</div>';
     btn.disabled=false;
   }
 }
 
-function renderTodos(todos){
-  if(!todos.length){
-    document.getElementById('output').innerHTML='<div class="empty-state">リストを作れませんでした</div>';
+function renderWords(words){
+  if(!words.length){
+    document.getElementById('output').innerHTML='<div class="empty-state">ことばを作れませんでした</div>';
     return;
   }
-  const pMap={high:'今日から',mid:'今週中',low:'ゆっくりと'};
-  const cMap={high:'p-high',mid:'p-mid',low:'p-low'};
-  let html='<div class="output-header">やることリスト</div>';
-  todos.forEach(t=>{
-    html+=`<div class="todo-item">
-      <span class="priority-badge ${cMap[t.priority]||'p-low'}">${pMap[t.priority]||'ゆっくりと'}</span>
-      <div>
-        <div class="todo-text">${t.text}</div>
-        ${t.note?`<div class="todo-cat">${t.note}</div>`:''}
-      </div>
-    </div>`;
+  let html='<div class="output-header">支援ことば</div><div class="chips">';
+  words.forEach(word=>{
+    html+=`<span class="chip selected">${word}</span>`;
   });
+  html+='</div>';
   document.getElementById('output').innerHTML=html;
   document.getElementById('ai-btn').disabled=false;
   document.getElementById('s3').className='step-num done';
-  document.getElementById('guide-text').innerHTML='リストができました！無理せず、できそうなことから始めましょう。<br>うまくいかない日があっても大丈夫です。';
+  document.getElementById('guide-text').innerHTML='ことばができました。今の自分に合いそうなものを見つけてみましょう。<br>しっくりこないものは無理に選ばなくて大丈夫です。';
 }
 
 renderMandala();
