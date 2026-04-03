@@ -188,7 +188,7 @@ async function showThemeHints(){
   chips.innerHTML='<div class="loading-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>候補を考えています…</span></div>';
   
   try{
-    const res=await fetch('http://localhost:3000/api/generate',{
+    const res=await fetch('/api/generate',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         prompt:`精神障害・発達障害の方が日常生活や就労で取り組みたいテーマの候補を10個、JSON配列で返してください。温かく具体的な言葉で。{"themes":["テーマ1","テーマ2",...]}のみ返してください。`
@@ -241,7 +241,7 @@ async function showCellHints(blockIdx, cellEl){
   const existingElements=[0,1,2,3,5,6,7,8].map(i=>themes_arr[i]).filter(Boolean);
 
   try{
-    const res=await fetch('http://localhost:3000/api/generate',{
+    const res=await fetch('/api/generate',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         prompt:`マンダラチャートのテーマ「${theme}」に対する要素の候補を5個考えてください。
@@ -373,7 +373,7 @@ async function runAI(){
 - 形式のみ：{"todos":[{"text":"...","priority":"high|mid|low","category":"...","note":"ひとこと励まし"}]}`;
 
   try{
-    const res=await fetch('http://localhost:3000/api/generate',{
+    const res=await fetch('/api/generate',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({prompt:prompt})
     });
