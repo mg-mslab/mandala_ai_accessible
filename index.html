@@ -16,6 +16,7 @@
 .step-arrow{color:var(--color-border-secondary);font-size:12px}
 .theme-section{margin-bottom:1.25rem}
 .label{font-size:13px;font-weight:500;color:var(--text-s);margin-bottom:6px;display:block}
+.subtext{font-size:12px;color:var(--text-s);line-height:1.6;margin-top:6px}
 .theme-input-row{display:flex;gap:8px;align-items:center}
 .theme-inp{flex:1;padding:10px 14px;border:1.5px solid var(--purple-mid);border-radius:var(--border-radius-md);font-size:15px;font-family:var(--font-sans);background:var(--bg);color:var(--text);outline:none}
 .theme-inp:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(127,119,221,.15)}
@@ -70,6 +71,9 @@
 .progress{display:flex;gap:4px;margin-bottom:1.25rem}
 .prog-cell{height:5px;border-radius:3px;flex:1;background:var(--bg2);border:0.5px solid var(--border);transition:background .3s}
 .prog-cell.filled{background:var(--purple);border-color:var(--purple-dark)}
+.usage-box{border:0.5px solid var(--border);border-radius:var(--border-radius-lg);background:var(--bg);padding:12px 14px;margin-bottom:1.25rem}
+.usage-title{font-size:12px;font-weight:600;color:var(--text-s);letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
+.usage-list{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--text);line-height:1.6}
 </style>
 
 <div class="app">
@@ -80,7 +84,17 @@
 
   <div class="guide-box">
     <div class="guide-icon">💡</div>
-    <div class="guide-text" id="guide-text">まず、いま考えたいテーマや目標を入力してください。<br>思いつかないときは「候補を見る」ボタンを押してください。</div>
+    <div class="guide-text" id="guide-text">最初に、いま整理したいことを1つだけ入れてください。<br>次に、そのテーマに関係する言葉を8つまで入れると、AIが関連することばを出します。</div>
+  </div>
+
+  <div class="usage-box">
+    <div class="usage-title">使い方</div>
+    <div class="usage-list">
+      <div>1. 中央のテーマを決めます。例: 「就職活動」「生活リズム」</div>
+      <div>2. まわりの8マスに、関係する言葉を1語ずつ入れます</div>
+      <div>3. 思いつかないマスは「✦」で候補を入れられます</div>
+      <div>4. 最後に AI のことばを見て、使えそうな視点を選びます</div>
+    </div>
   </div>
 
   <div class="step-row">
@@ -92,18 +106,20 @@
   </div>
 
   <div class="theme-section">
-    <span class="label">テーマ（中心に置くこと）</span>
+    <span class="label">テーマを1つ入れる</span>
     <div class="theme-input-row">
-      <input class="theme-inp" id="theme-inp" placeholder="例：就職活動、生活リズムを整える、趣味を増やす…" oninput="onThemeInput(this.value)">
+      <input class="theme-inp" id="theme-inp" placeholder="例：就職活動、生活リズム、気分の安定" oninput="onThemeInput(this.value)">
       <button class="hint-btn" onclick="showThemeHints()">候補を見る ✦</button>
     </div>
+    <div class="subtext">長い文章ではなく、短いテーマ名で大丈夫です。</div>
     <div class="chips" id="theme-chips"></div>
   </div>
 
   <div class="progress"><div id="prog"></div></div>
 
   <div class="mandala-section">
-    <span class="label">8つの要素　<span style="font-weight:400;color:var(--color-text-tertiary)">— 思いつかないマスは「✦」を押すとヒントが出ます</span></span>
+    <span class="label">テーマに関係する言葉を8つ入れる</span>
+    <div class="subtext">中央のまわり8マスだけ入力すれば使えます。外側の小さいマスは、必要なときだけ書いてください。</div>
     <div class="mandala" id="mandala"></div>
   </div>
 
@@ -114,7 +130,7 @@
   </div>
 
   <div class="output-panel" id="output">
-    <div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>関連することばが並びます</div>
+    <div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>考えるヒントになることばが並びます</div>
   </div>
 </div>
 
@@ -177,10 +193,10 @@ function updateGuide(){
   const el=document.getElementById('guide-text');
   const hasTheme=(themes_arr[4]||'').trim().length>0;
   const cnt=[0,1,2,3,5,6,7,8].filter(i=>(themes_arr[i]||'').trim()).length;
-  if(!hasTheme) el.innerHTML='まず、いま考えたいテーマや目標を入力してください。<br>思いつかないときは「候補を見る」ボタンを押してください。';
-  else if(cnt<3) el.innerHTML=`「${themes_arr[4]}」についての要素を8つ埋めていきましょう。<br>思いつかないマスは「✦」ボタンでヒントを見られます。`;
-  else if(cnt<8) el.innerHTML=`あと${8-cnt}つ！埋まったら「AIにことばを出してもらう」を押してください。`;
-  else el.innerHTML='準備できました！「AIにことばを出してもらう」を押してください。';
+  if(!hasTheme) el.innerHTML='最初に、いま整理したいテーマを1つ入れてください。<br>迷うときは「候補を見る」から選べます。';
+  else if(cnt<3) el.innerHTML=`次は「${themes_arr[4]}」に関係する言葉を入れます。<br>思いつかないマスは「✦」を押すと候補が出ます。`;
+  else if(cnt<8) el.innerHTML=`いま${cnt}個入りました。あと${8-cnt}個まで入れられます。<br>十分なら、このままAIにことばを出してもらって大丈夫です。`;
+  else el.innerHTML='入力できました。下のボタンを押すと、考えるヒントになることばが表示されます。';
 }
 
 async function showThemeHints(){
@@ -348,7 +364,7 @@ function clearAll(){
   document.getElementById('theme-inp').value='';
   document.getElementById('theme-chips').innerHTML='';
   renderMandala();checkBtn();updateProgress();updateGuide();
-  document.getElementById('output').innerHTML='<div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>関連することばが並びます</div>';
+  document.getElementById('output').innerHTML='<div class="empty-state">テーマと要素を入力して<br>「AIにことばを出してもらう」を押すと<br>考えるヒントになることばが並びます</div>';
 }
 
 async function runAI(){
@@ -402,7 +418,7 @@ function renderWords(words){
   document.getElementById('output').innerHTML=html;
   document.getElementById('ai-btn').disabled=false;
   document.getElementById('s3').className='step-num done';
-  document.getElementById('guide-text').innerHTML='ことばができました。今の自分に合いそうなものを見つけてみましょう。<br>しっくりこないものは無理に選ばなくて大丈夫です。';
+  document.getElementById('guide-text').innerHTML='ことばができました。今の気持ちに近いもの、気になるものから見てください。<br>正解を選ぶ必要はありません。考えるきっかけとして使えます。';
 }
 
 renderMandala();
