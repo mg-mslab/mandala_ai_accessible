@@ -16,6 +16,8 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Prompt is required' });
     }
 
+    console.log('API_KEY exists:', !!process.env.GEMINI_API_KEY);
+
     if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({ error: 'GEMINI_API_KEY is not set' });
     }
