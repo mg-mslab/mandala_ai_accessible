@@ -1,0 +1,415 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--purple:#7F77DD;--purple-light:#EEEDFE;--purple-mid:#AFA9EC;--purple-dark:#534AB7;--text:var(--color-text-primary);--text-s:var(--color-text-secondary);--bg:var(--color-background-primary);--bg2:var(--color-background-secondary);--border:var(--color-border-tertiary)}
+.app{padding:1rem 0;max-width:700px;margin:0 auto;font-family:var(--font-sans)}
+.header{margin-bottom:1.5rem}
+.app-name{font-size:20px;font-weight:500;color:var(--text);letter-spacing:-.01em}
+.app-desc{font-size:14px;color:var(--text-s);margin-top:3px;line-height:1.5}
+.guide-box{background:#EEEDFE;border:0.5px solid #AFA9EC;border-radius:var(--border-radius-lg);padding:12px 16px;margin-bottom:1.25rem;display:flex;gap:10px;align-items:flex-start}
+.guide-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.guide-text{font-size:13px;color:#3C3489;line-height:1.6}
+.step-row{display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap}
+.step{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-s)}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.step-num.done{background:#639922}
+.step-arrow{color:var(--color-border-secondary);font-size:12px}
+.theme-section{margin-bottom:1.25rem}
+.label{font-size:13px;font-weight:500;color:var(--text-s);margin-bottom:6px;display:block}
+.theme-input-row{display:flex;gap:8px;align-items:center}
+.theme-inp{flex:1;padding:10px 14px;border:1.5px solid var(--purple-mid);border-radius:var(--border-radius-md);font-size:15px;font-family:var(--font-sans);background:var(--bg);color:var(--text);outline:none}
+.theme-inp:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(127,119,221,.15)}
+.hint-btn{padding:8px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--purple-mid);background:#EEEDFE;color:#534AB7;font-size:13px;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;transition:all .15s}
+.hint-btn:hover{background:#CECBF6}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;min-height:0}
+.chip{padding:5px 12px;border-radius:20px;background:var(--bg2);border:0.5px solid var(--border);font-size:12px;color:var(--text-s);cursor:pointer;transition:all .15s;line-height:1.3}
+.chip:hover{background:#EEEDFE;border-color:#AFA9EC;color:#534AB7}
+.chip.selected{background:#EEEDFE;border-color:var(--purple);color:#534AB7;font-weight:500}
+.mandala-section{margin-bottom:1.25rem}
+.mandala{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:5px;border-radius:var(--border-radius-md);border:0.5px solid var(--border);background:var(--bg2);position:relative}
+.mini-grid.center-block{border:2px solid var(--purple);background:#EEEDFE}
+.cell{aspect-ratio:1;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;transition:all .15s}
+.cell input{width:100%;height:100%;border:none;background:transparent;text-align:center;font-size:8.5px;color:var(--text);cursor:pointer;outline:none;padding:2px;line-height:1.2;font-family:var(--font-sans)}
+.cell-center{background:var(--purple)}
+.cell-center input{color:#fff;font-weight:500}
+.cell-theme{background:#AFA9EC}
+.cell-theme input{color:#26215C;font-weight:500;font-size:8px}
+.cell-normal{background:var(--bg);border:0.5px solid var(--border)}
+.cell-normal:hover{border-color:var(--purple-mid);background:#EEEDFE}
+.cell-filled{background:#EEEDFE;border-color:var(--purple-mid)}
+.cell-filled input{color:#534AB7}
+.cell-hint-btn{position:absolute;top:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--purple-mid);border:none;cursor:pointer;font-size:8px;color:#fff;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;line-height:1}
+.cell-normal:hover .cell-hint-btn,.cell-filled:hover .cell-hint-btn{opacity:1}
+.hint-popup{position:absolute;z-index:100;background:var(--bg);border:0.5px solid var(--purple-mid);border-radius:var(--border-radius-md);padding:8px;width:140px;box-shadow:none;top:100%;left:50%;transform:translateX(-50%);margin-top:2px}
+.hint-popup-title{font-size:10px;color:var(--text-s);margin-bottom:5px}
+.hint-chip-sm{font-size:10px;padding:3px 8px;border-radius:10px;background:#EEEDFE;color:#534AB7;border:0.5px solid var(--purple-mid);cursor:pointer;margin:2px 2px 0 0;display:inline-block;line-height:1.4}
+.hint-chip-sm:hover{background:#CECBF6}
+.hint-loading{font-size:10px;color:var(--text-s);padding:4px 0}
+.actions-row{display:flex;gap:8px;margin-bottom:1.25rem;flex-wrap:wrap;align-items:center}
+.btn{padding:9px 18px;border-radius:var(--border-radius-md);font-size:13px;border:0.5px solid var(--border);cursor:pointer;font-family:var(--font-sans);transition:all .15s;background:transparent;color:var(--text)}
+.btn:hover{background:var(--bg2)}
+.btn-primary{background:var(--purple);color:#fff;border-color:var(--purple-dark);font-weight:500;font-size:14px;padding:10px 22px}
+.btn-primary:hover{background:var(--purple-dark)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.output-panel{border:0.5px solid var(--border);border-radius:var(--border-radius-lg);background:var(--bg);padding:1rem 1.25rem}
+.output-header{font-size:12px;font-weight:500;color:var(--text-s);margin-bottom:.875rem;text-transform:uppercase;letter-spacing:.05em}
+.todo-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid var(--border)}
+.todo-item:last-child{border-bottom:none}
+.priority-badge{font-size:10px;padding:3px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px;font-weight:500}
+.p-high{background:#FCEBEB;color:#A32D2D}
+.p-mid{background:#FAEEDA;color:#854F0B}
+.p-low{background:#EAF3DE;color:#3B6D11}
+.todo-text{font-size:14px;color:var(--text);line-height:1.5}
+.todo-cat{font-size:11px;color:var(--text-s);margin-top:2px}
+.empty-state{text-align:center;padding:2rem 1rem;color:var(--text-s);font-size:14px;line-height:1.7}
+.loading-row{display:flex;align-items:center;gap:8px;color:var(--text-s);font-size:13px;padding:.5rem 0}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--purple);animation:blink .8s infinite alternate}
+.dot:nth-child(2){animation-delay:.25s}.dot:nth-child(3){animation-delay:.5s}
+@keyframes blink{to{opacity:.2}}
+.progress{display:flex;gap:4px;margin-bottom:1.25rem}
+.prog-cell{height:5px;border-radius:3px;flex:1;background:var(--bg2);border:0.5px solid var(--border);transition:background .3s}
+.prog-cell.filled{background:var(--purple);border-color:var(--purple-dark)}
+</style>
+
+<div class="app">
+  <div class="header">
+    <div class="app-name">Mandala AI</div>
+    <div class="app-desc">思いついたことを書くだけで、やることが整理されます</div>
+  </div>
+
+  <div class="guide-box">
+    <div class="guide-icon">💡</div>
+    <div class="guide-text" id="guide-text">まず、いま考えたいテーマや目標を入力してください。<br>思いつかないときは「候補を見る」ボタンを押してください。</div>
+  </div>
+
+  <div class="step-row">
+    <div class="step"><div class="step-num" id="s1">1</div><span>テーマを決める</span></div>
+    <div class="step-arrow">›</div>
+    <div class="step"><div class="step-num" id="s2">2</div><span>8つの要素を埋める</span></div>
+    <div class="step-arrow">›</div>
+    <div class="step"><div class="step-num" id="s3">3</div><span>AIに整理してもらう</span></div>
+  </div>
+
+  <div class="theme-section">
+    <span class="label">テーマ（中心に置くこと）</span>
+    <div class="theme-input-row">
+      <input class="theme-inp" id="theme-inp" placeholder="例：就職活動、生活リズムを整える、趣味を増やす…" oninput="onThemeInput(this.value)">
+      <button class="hint-btn" onclick="showThemeHints()">候補を見る ✦</button>
+    </div>
+    <div class="chips" id="theme-chips"></div>
+  </div>
+
+  <div class="progress"><div id="prog"></div></div>
+
+  <div class="mandala-section">
+    <span class="label">8つの要素　<span style="font-weight:400;color:var(--color-text-tertiary)">— 思いつかないマスは「✦」を押すとヒントが出ます</span></span>
+    <div class="mandala" id="mandala"></div>
+  </div>
+
+  <div class="actions-row">
+    <button class="btn" onclick="fillSample()">サンプルを入れる</button>
+    <button class="btn" onclick="clearAll()">クリア</button>
+    <button class="btn btn-primary" id="ai-btn" onclick="runAI()" disabled>AIに整理してもらう ↗</button>
+  </div>
+
+  <div class="output-panel" id="output">
+    <div class="empty-state">テーマと要素を入力して<br>「AIに整理してもらう」を押すと<br>やることリストが作られます</div>
+  </div>
+</div>
+
+<script>
+const themes_arr = Array(9).fill('');
+const elements = Array.from({length:9},()=>Array(9).fill(''));
+let openPopup = null;
+
+const THEME_HINTS_BASE = [
+  '生活リズムを整える','就職活動','趣味を増やす','体の調子を整える',
+  '人間関係を良くする','お金の管理','自分の得意を知る','休み方を覚える',
+  'コミュニケーション練習','自分らしく働く'
+];
+
+const ELEMENT_HINTS = {
+  '生活リズムを整える':['睡眠','食事','運動','服薬','外出','記録','リラックス','朝のルーティン'],
+  '就職活動':['履歴書','面接練習','求人探し','体調管理','支援機関','スキルアップ','自己分析','相談相手'],
+  default:['体のこと','気持ちのこと','生活のこと','人のこと','お金のこと','時間のこと','好きなこと','やりたいこと']
+};
+
+function getElementHints(theme){
+  return ELEMENT_HINTS[theme] || ELEMENT_HINTS.default;
+}
+
+function onThemeInput(val){
+  themes_arr[4] = val;
+  syncThemes();
+  checkBtn();
+  updateProgress();
+  updateGuide();
+}
+
+function syncThemes(){
+  document.querySelectorAll('.cell-theme input').forEach(inp=>{
+    const idx = parseInt(inp.dataset.block);
+    inp.value = themes_arr[idx]||'';
+  });
+}
+
+function updateProgress(){
+  const filled = [0,1,2,3,5,6,7,8].filter(i=>themes_arr[i]&&themes_arr[i].trim()).length;
+  const total = 8;
+  let html='';
+  for(let i=0;i<total;i++) html+=`<div class="prog-cell${i<filled?' filled':''}"></div>`;
+  document.getElementById('prog').innerHTML=html;
+}
+
+function checkBtn(){
+  const hasTheme=(themes_arr[4]||'').trim().length>0;
+  const hasAny=[0,1,2,3,5,6,7,8].some(i=>(themes_arr[i]||'').trim());
+  document.getElementById('ai-btn').disabled=!(hasTheme&&hasAny);
+  [1,2,3].forEach(n=>{
+    const el=document.getElementById('s'+n);
+    if(n===1) el.className='step-num'+(hasTheme?' done':'');
+    if(n===2) el.className='step-num'+(hasAny?' done':'');
+  });
+}
+
+function updateGuide(){
+  const el=document.getElementById('guide-text');
+  const hasTheme=(themes_arr[4]||'').trim().length>0;
+  const cnt=[0,1,2,3,5,6,7,8].filter(i=>(themes_arr[i]||'').trim()).length;
+  if(!hasTheme) el.innerHTML='まず、いま考えたいテーマや目標を入力してください。<br>思いつかないときは「候補を見る」ボタンを押してください。';
+  else if(cnt<3) el.innerHTML=`「${themes_arr[4]}」についての要素を8つ埋めていきましょう。<br>思いつかないマスは「✦」ボタンでヒントを見られます。`;
+  else if(cnt<8) el.innerHTML=`あと${8-cnt}つ！埋まったら「AIに整理してもらう」を押してください。`;
+  else el.innerHTML='準備できました！「AIに整理してもらう」を押してください。';
+}
+
+async function showThemeHints(){
+  const chips = document.getElementById('theme-chips');
+  chips.innerHTML='<div class="loading-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>候補を考えています…</span></div>';
+  
+  try{
+    const res=await fetch('http://localhost:3000/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        prompt:`精神障害・発達障害の方が日常生活や就労で取り組みたいテーマの候補を10個、JSON配列で返してください。温かく具体的な言葉で。{"themes":["テーマ1","テーマ2",...]}のみ返してください。`
+      })
+    });
+    if (!res.ok) throw new Error('API request failed');
+    const data=await res.json();
+    const text=data.text||'';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    renderThemeChips(parsed.themes||THEME_HINTS_BASE);
+  }catch{
+    renderThemeChips(THEME_HINTS_BASE);
+  }
+}
+
+function renderThemeChips(list){
+  const chips=document.getElementById('theme-chips');
+  chips.innerHTML='';
+  list.forEach(t=>{
+    const c=document.createElement('span');
+    c.className='chip';c.textContent=t;
+    c.onclick=()=>{
+      document.getElementById('theme-inp').value=t;
+      onThemeInput(t);
+      chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));
+      c.classList.add('selected');
+    };
+    chips.appendChild(c);
+  });
+}
+
+async function showCellHints(blockIdx, cellEl){
+  if(openPopup){openPopup.remove();openPopup=null}
+  const popup=document.createElement('div');
+  popup.className='hint-popup';
+  popup.innerHTML='<div class="hint-loading">ヒントを考えています…</div>';
+  cellEl.style.position='relative';
+  cellEl.appendChild(popup);
+  openPopup=popup;
+
+  document.addEventListener('click',function handler(e){
+    if(!popup.contains(e.target)&&!cellEl.contains(e.target)){
+      popup.remove();openPopup=null;
+      document.removeEventListener('click',handler);
+    }
+  },{once:false});
+
+  const theme=themes_arr[4]||'このテーマ';
+  const hints=getElementHints(theme);
+  const existingElements=[0,1,2,3,5,6,7,8].map(i=>themes_arr[i]).filter(Boolean);
+
+  try{
+    const res=await fetch('http://localhost:3000/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        prompt:`マンダラチャートのテーマ「${theme}」に対する要素の候補を5個考えてください。
+既に入力済み: ${existingElements.join('、')||'なし'}
+精神障害・発達障害の方向けに、やさしく具体的な言葉で。
+{"hints":["候補1","候補2","候補3","候補4","候補5"]}のみ返してください。`
+      })
+    });
+    if (!res.ok) throw new Error('API request failed');
+    const data=await res.json();
+    const text=data.text||'';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    const items=parsed.hints||hints;
+    popup.innerHTML='<div class="hint-popup-title">ヒント（タップで入力）</div>';
+    items.forEach(h=>{
+      const s=document.createElement('span');
+      s.className='hint-chip-sm';s.textContent=h;
+      s.onclick=e=>{
+        e.stopPropagation();
+        themes_arr[blockIdx]=h;
+        popup.remove();openPopup=null;
+        renderMandala();
+        checkBtn();updateProgress();updateGuide();
+      };
+      popup.appendChild(s);
+    });
+  }catch{
+    popup.innerHTML='<div class="hint-popup-title">ヒント</div>';
+    hints.slice(0,5).forEach(h=>{
+      const s=document.createElement('span');
+      s.className='hint-chip-sm';s.textContent=h;
+      s.onclick=e=>{
+        e.stopPropagation();
+        themes_arr[blockIdx]=h;
+        popup.remove();openPopup=null;
+        renderMandala();checkBtn();updateProgress();updateGuide();
+      };
+      popup.appendChild(s);
+    });
+  }
+}
+
+function renderMandala(){
+  const m=document.getElementById('mandala');
+  m.innerHTML='';
+  for(let block=0;block<9;block++){
+    const mini=document.createElement('div');
+    mini.className='mini-grid'+(block===4?' center-block':'');
+    for(let cell=0;cell<9;cell++){
+      const isCenter=cell===4;
+      const isThemeRef=block!==4&&isCenter;
+      const c=document.createElement('div');
+      const inp=document.createElement('input');
+      inp.type='text';inp.maxLength=12;
+      if(block===4&&isCenter){
+        c.className='cell cell-center';
+        inp.placeholder='テーマ';
+        inp.value=themes_arr[4]||'';
+        inp.oninput=e=>onThemeInput(e.target.value);
+      } else if(block===4){
+        c.className='cell cell-normal'+(themes_arr[cell]?' cell-filled':'');
+        inp.placeholder='要素'+(cell+1);
+        inp.value=themes_arr[cell]||'';
+        inp.dataset.block=cell;
+        inp.oninput=e=>{themes_arr[cell]=e.target.value;syncThemes();checkBtn();updateProgress();updateGuide()};
+        if(!isCenter){
+          const hb=document.createElement('button');
+          hb.className='cell-hint-btn';hb.textContent='✦';hb.title='ヒントを見る';
+          hb.onclick=e=>{e.stopPropagation();showCellHints(cell,c)};
+          c.appendChild(hb);
+        }
+      } else if(isThemeRef){
+        c.className='cell cell-theme';
+        inp.value=themes_arr[block]||'';
+        inp.readOnly=true;
+        inp.style.cursor='default';
+        inp.dataset.block=block;
+      } else {
+        c.className='cell cell-normal'+(elements[block][cell]?' cell-filled':'');
+        inp.value=elements[block][cell]||'';
+        inp.oninput=e=>{elements[block][cell]=e.target.value};
+      }
+      c.appendChild(inp);
+      mini.appendChild(c);
+    }
+    m.appendChild(mini);
+  }
+  updateProgress();
+}
+
+function fillSample(){
+  themes_arr[4]='生活リズムを整える';
+  themes_arr[0]='睡眠';themes_arr[1]='食事';themes_arr[2]='運動';
+  themes_arr[3]='服薬';themes_arr[5]='外出';
+  themes_arr[6]='記録';themes_arr[7]='リラックス';themes_arr[8]='朝のルーティン';
+  elements[0]=['23時就寝','起床時間を固定','昼寝を短くする','寝る前スマホなし','','','','',''];
+  elements[1]=['1日3食','水を飲む','簡単に作れるものを','外食を減らす','','','','',''];
+  renderMandala();syncThemes();checkBtn();updateProgress();updateGuide();
+}
+
+function clearAll(){
+  themes_arr.fill('');
+  elements.forEach(r=>r.fill(''));
+  document.getElementById('theme-inp').value='';
+  document.getElementById('theme-chips').innerHTML='';
+  renderMandala();checkBtn();updateProgress();updateGuide();
+  document.getElementById('output').innerHTML='<div class="empty-state">テーマと要素を入力して<br>「AIに整理してもらう」を押すと<br>やることリストが作られます</div>';
+}
+
+async function runAI(){
+  const btn=document.getElementById('ai-btn');
+  btn.disabled=true;
+  const out=document.getElementById('output');
+  out.innerHTML='<div class="loading-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span>AIが整理しています…少しお待ちください</span></div>';
+  const elList=[0,1,2,3,5,6,7,8].map(i=>themes_arr[i]).filter(Boolean);
+  const details=elements.flatMap(r=>r.filter(c=>c.trim()));
+  const prompt=`あなたは精神障害・発達障害の方の生活支援をするAIです。
+マンダラチャートの内容を分析し、やさしく具体的なToDoリストを作ってください。
+
+テーマ：${themes_arr[4]}
+要素：${elList.join('、')}
+詳細：${details.join('、')||'なし'}
+
+ルール：
+- 一つひとつの行動を小さく、具体的に書く
+- 「〜してみる」「〜から始める」など、やさしい言葉で
+- 優先度：high(今日できること)、mid(今週中)、low(無理せずゆっくり)
+- 最大8件
+- 形式のみ：{"todos":[{"text":"...","priority":"high|mid|low","category":"...","note":"ひとこと励まし"}]}`;
+
+  try{
+    const res=await fetch('http://localhost:3000/api/generate',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({prompt:prompt})
+    });
+    if (!res.ok) throw new Error('API request failed');
+    const data=await res.json();
+    const text=data.text||'';
+    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
+    renderTodos(parsed.todos||[]);
+  }catch(e){
+    out.innerHTML='<div class="empty-state">うまく整理できませんでした。<br>もう一度押してみてください。</div>';
+    btn.disabled=false;
+  }
+}
+
+function renderTodos(todos){
+  if(!todos.length){
+    document.getElementById('output').innerHTML='<div class="empty-state">リストを作れませんでした</div>';
+    return;
+  }
+  const pMap={high:'今日から',mid:'今週中',low:'ゆっくりと'};
+  const cMap={high:'p-high',mid:'p-mid',low:'p-low'};
+  let html='<div class="output-header">やることリスト</div>';
+  todos.forEach(t=>{
+    html+=`<div class="todo-item">
+      <span class="priority-badge ${cMap[t.priority]||'p-low'}">${pMap[t.priority]||'ゆっくりと'}</span>
+      <div>
+        <div class="todo-text">${t.text}</div>
+        ${t.note?`<div class="todo-cat">${t.note}</div>`:''}
+      </div>
+    </div>`;
+  });
+  document.getElementById('output').innerHTML=html;
+  document.getElementById('ai-btn').disabled=false;
+  document.getElementById('s3').className='step-num done';
+  document.getElementById('guide-text').innerHTML='リストができました！無理せず、できそうなことから始めましょう。<br>うまくいかない日があっても大丈夫です。';
+}
+
+renderMandala();
+</script>
